@@ -1,4 +1,3 @@
-
 import React, { createContext, useContext, useState, useEffect } from "react";
 
 // Types
@@ -11,6 +10,8 @@ export interface UserProfile {
   role: UserRole;
   profilePicture?: string;
   allowedSoftware?: string[];
+  ssoTokens?: Record<string, string>;
+  workData?: Record<string, string[]>;
 }
 
 interface AuthContextType {
@@ -21,6 +22,10 @@ interface AuthContextType {
   logout: () => void;
   updateProfile: (data: Partial<UserProfile>) => Promise<void>;
   changePassword: (oldPassword: string, newPassword: string) => Promise<void>;
+  forgotPassword: (email: string) => Promise<void>;
+  resetPassword: (email: string, resetCode: string, newPassword: string) => Promise<void>;
+  generateSSOToken: (softwareName: string) => Promise<string>;
+  saveWorkData: (softwareName: string, workContent: string) => Promise<void>;
 }
 
 // Mock users for demo
@@ -31,14 +36,18 @@ const MOCK_USERS: UserProfile[] = [
     email: "user@example.com",
     role: "user",
     profilePicture: "",
-    allowedSoftware: ["VS CODE", "JUPYTER NOTEBOOK", "POSTMAN", "GITHUB"]
+    allowedSoftware: ["VS CODE", "JUPYTER NOTEBOOK", "POSTMAN", "GITHUB"],
+    ssoTokens: {},
+    workData: {}
   },
   {
     id: "2",
     username: "admin",
     email: "admin@example.com",
     role: "admin",
-    profilePicture: ""
+    profilePicture: "",
+    ssoTokens: {},
+    workData: {}
   }
 ];
 
@@ -50,6 +59,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [currentUser, setCurrentUser] = useState<UserProfile | null>(null);
   const [loading, setLoading] = useState(true);
   const [users, setUsers] = useState<UserProfile[]>(MOCK_USERS);
+  const [resetCodes, setResetCodes] = useState<Record<string, string>>({});
 
   // Load user from local storage on mount
   useEffect(() => {
@@ -110,7 +120,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         email,
         role,
         profilePicture: "",
-        allowedSoftware: role === "user" ? ["VS CODE", "GITHUB"] : undefined
+        allowedSoftware: role === "user" ? ["VS CODE", "GITHUB"] : undefined,
+        ssoTokens: {},
+        workData: {}
       };
       
       setUsers([...users, newUser]);
@@ -144,6 +156,112 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     return Promise.resolve();
   };
 
+  // New methods for forgot password functionality
+  const forgotPassword = async (email: string) => {
+    try {
+      // Check if user exists
+      const user = users.find(u => u.email === email);
+      if (!user) {
+        throw new Error("No account found with this email");
+      }
+      
+      // Generate a reset code (6-digit number)
+      const resetCode = Math.floor(100000 + Math.random() * 900000).toString();
+      
+      // Store reset code (in a real app, this would be stored in a database with an expiration time)
+      setResetCodes(prev => ({ ...prev, [email]: resetCode }));
+      
+      // In a real app, you would send an email with the reset code
+      console.log(`Reset code for ${email}: ${resetCode}`);
+      
+      return Promise.resolve();
+    } catch (error) {
+      console.error("Forgot password error:", error);
+      throw error;
+    }
+  };
+
+  const resetPassword = async (email: string, resetCode: string, newPassword: string) => {
+    try {
+      // Verify reset code
+      const storedCode = resetCodes[email];
+      if (!storedCode || storedCode !== resetCode) {
+        throw new Error("Invalid reset code");
+      }
+      
+      // Find user by email
+      const updatedUsers = users.map(user => {
+        if (user.email === email) {
+          // In a real app, you'd hash the new password
+          return user; // Password would be updated here
+        }
+        return user;
+      });
+      
+      // Update users
+      setUsers(updatedUsers);
+      
+      // Remove reset code
+      const newResetCodes = { ...resetCodes };
+      delete newResetCodes[email];
+      setResetCodes(newResetCodes);
+      
+      return Promise.resolve();
+    } catch (error) {
+      console.error("Reset password error:", error);
+      throw error;
+    }
+  };
+
+  // SSO and work data methods
+  const generateSSOToken = async (softwareName: string) => {
+    if (!currentUser) return Promise.reject("No user logged in");
+    
+    // In a real app, this would generate a secure token for SSO
+    const token = `sso_${currentUser.id}_${softwareName}_${Date.now()}`;
+    
+    // Store token
+    const updatedUser = {
+      ...currentUser,
+      ssoTokens: {
+        ...currentUser.ssoTokens,
+        [softwareName]: token
+      }
+    };
+    setCurrentUser(updatedUser);
+    
+    // Update in users array too
+    setUsers(users.map(u => u.id === currentUser.id ? updatedUser : u));
+    
+    return token;
+  };
+
+  const saveWorkData = async (softwareName: string, workContent: string) => {
+    if (!currentUser) return Promise.reject("No user logged in");
+    
+    // Get current work data or initialize empty array
+    const currentWorkData = currentUser.workData || {};
+    const softwareWorkData = currentWorkData[softwareName] || [];
+    
+    // Add new work content
+    const updatedWorkData = {
+      ...currentWorkData,
+      [softwareName]: [...softwareWorkData, workContent]
+    };
+    
+    // Update user
+    const updatedUser = {
+      ...currentUser,
+      workData: updatedWorkData
+    };
+    setCurrentUser(updatedUser);
+    
+    // Update in users array too
+    setUsers(users.map(u => u.id === currentUser.id ? updatedUser : u));
+    
+    return Promise.resolve();
+  };
+
   const value = {
     currentUser,
     loading,
@@ -151,7 +269,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     signup,
     logout,
     updateProfile,
-    changePassword
+    changePassword,
+    forgotPassword,
+    resetPassword,
+    generateSSOToken,
+    saveWorkData
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

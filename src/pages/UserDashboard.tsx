@@ -62,8 +62,25 @@ const SOFTWARE_ICONS = {
   "GITHUB": <GitBranch size={24} />
 };
 
+// SSO URLs for each software (in a real app, these would be actual URLs)
+const SOFTWARE_URLS = {
+  "VS CODE": "https://vscode.dev",
+  "JUPYTER NOTEBOOK": "https://jupyter.org/try",
+  "POSTMAN": "https://go.postman.co/build",
+  "MLFLOW": "https://mlflow.org",
+  "KUBEFLOW": "https://www.kubeflow.org",
+  "AIRFLOW": "https://airflow.apache.org",
+  "PINECONE": "https://app.pinecone.io",
+  "PROMETHESUS": "https://prometheus.io",
+  "GRAFANA": "https://grafana.com",
+  "DEVOPS": "https://dev.azure.com",
+  "AUTOML": "https://cloud.google.com/automl",
+  "LLMOPS": "https://www.databricks.com",
+  "GITHUB": "https://github.com"
+};
+
 export default function UserDashboard() {
-  const { currentUser, logout } = useAuth();
+  const { currentUser, logout, generateSSOToken, saveWorkData } = useAuth();
   const { toast } = useToast();
   const navigate = useNavigate();
   const [activeSoftware, setActiveSoftware] = useState<string | null>(null);
@@ -80,32 +97,52 @@ export default function UserDashboard() {
     navigate("/");
   };
   
-  const handleLaunchSoftware = (softwareName: string) => {
+  const handleLaunchSoftware = async (softwareName: string) => {
     // Set the active software
     setActiveSoftware(softwareName);
     
-    // In a real implementation, this would use SSO to launch the actual application
-    toast({
-      title: "Launching Software",
-      description: `Launching ${softwareName} with automatic sign-on...`,
-    });
-    
-    // Simulate opening the software in a new tab
-    setTimeout(() => {
-      window.open("about:blank", "_blank");
-    }, 1000);
+    try {
+      // Generate SSO token for the software
+      const token = await generateSSOToken(softwareName);
+      
+      // In a real app, this would use the token to authenticate to the software
+      toast({
+        title: "Launching Software",
+        description: `Launching ${softwareName} with automatic sign-on...`,
+      });
+      
+      // Append the token to the URL for SSO (in a real app, this would be handled differently)
+      const softwareUrl = `${SOFTWARE_URLS[softwareName as keyof typeof SOFTWARE_URLS]}?sso_token=${token}`;
+      
+      // Open the software in a new tab
+      window.open(softwareUrl, "_blank");
+    } catch (error) {
+      toast({
+        variant: "destructive",
+        title: "Launch Failed",
+        description: "Failed to launch software. Please try again.",
+      });
+    }
   };
   
   const handleSubmitWork = async (content: string) => {
     if (!activeSoftware) return;
     
-    // In a real implementation, this would send the work to a backend
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    
-    toast({
-      title: "Work Saved",
-      description: `Your ${activeSoftware} work has been saved and submitted.`,
-    });
+    try {
+      // Save work data
+      await saveWorkData(activeSoftware, content);
+      
+      toast({
+        title: "Work Saved",
+        description: `Your ${activeSoftware} work has been saved and submitted.`,
+      });
+    } catch (error) {
+      toast({
+        variant: "destructive",
+        title: "Submission Failed",
+        description: "Failed to save work. Please try again.",
+      });
+    }
   };
   
   if (!currentUser) {
@@ -186,6 +223,19 @@ export default function UserDashboard() {
                     This is a simulation of the {activeSoftware} environment. In a real implementation, 
                     this would be integrated with the actual application using SSO.
                   </p>
+                  
+                  {currentUser.workData && currentUser.workData[activeSoftware] && (
+                    <div className="mt-4">
+                      <h3 className="text-md font-medium mb-2">Your Saved Work:</h3>
+                      <div className="space-y-2">
+                        {currentUser.workData[activeSoftware].map((work, index) => (
+                          <div key={index} className="p-3 bg-white border rounded">
+                            <p className="text-sm whitespace-pre-wrap">{work}</p>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
                 </div>
               </div>
             )}

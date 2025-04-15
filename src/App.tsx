@@ -12,6 +12,7 @@ import PublicRoute from "@/components/PublicRoute";
 import Landing from "./pages/Landing";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
+import ForgotPassword from "./pages/ForgotPassword";
 import UserDashboard from "./pages/UserDashboard";
 import AdminDashboard from "./pages/AdminDashboard";
 import NotFound from "./pages/NotFound";
@@ -42,6 +43,14 @@ const App = () => (
                 element={
                   <PublicRoute>
                     <Signup />
+                  </PublicRoute>
+                } 
+              />
+              <Route 
+                path="/forgot-password" 
+                element={
+                  <PublicRoute>
+                    <ForgotPassword />
                   </PublicRoute>
                 } 
               />

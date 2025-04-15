@@ -89,6 +89,11 @@ export default function LoginForm() {
                 required
                 placeholder="Enter your password"
               />
+              <div className="text-right">
+                <Link to="/forgot-password" className="text-sm text-primary hover:underline">
+                  Forgot password?
+                </Link>
+              </div>
             </div>
             
             <Button type="submit" className="w-full" disabled={loading}>
