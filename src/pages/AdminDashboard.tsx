@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -5,27 +6,27 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import UserManagement from "@/components/admin/UserManagement";
 import UserMonitoring from "@/components/admin/UserMonitoring";
 import DatabaseConnection from "@/components/admin/DatabaseConnection";
-import { useAuth, UserProfile, useAdmin, WorkItem } from "@/contexts/AuthContext";
+import { useAuth, UserProfile, useAdmin } from "@/contexts/AuthContext";
+import { WorkItem } from "@/lib/supabase";
+import { usePropertyMapper } from "@/hooks/usePropertyMapper";
 
 // Sample work items for demonstration
 const SAMPLE_WORK_ITEMS: WorkItem[] = [
   {
     id: "1",
-    userId: "1",
-    username: "testuser",
+    user_id: "1",
     software: "VS CODE",
     content: "// This is a sample code submission\nfunction helloWorld() {\n  console.log('Hello, World!');\n}\n\nhelloWorld();",
     status: "pending",
-    createdAt: new Date(Date.now() - 3600000)
+    created_at: new Date(Date.now() - 3600000).toISOString()
   },
   {
     id: "2",
-    userId: "1",
-    username: "testuser",
+    user_id: "1",
     software: "JUPYTER NOTEBOOK",
     content: "# Data Analysis\nimport pandas as pd\nimport matplotlib.pyplot as plt\n\ndf = pd.read_csv('data.csv')\ndf.head()",
     status: "accepted",
-    createdAt: new Date(Date.now() - 7200000)
+    created_at: new Date(Date.now() - 7200000).toISOString()
   }
 ];
 
@@ -34,6 +35,7 @@ export default function AdminDashboard() {
   const navigate = useNavigate();
   const [users, setUsers] = useState<UserProfile[]>([]);
   const [workItems, setWorkItems] = useState<WorkItem[]>(SAMPLE_WORK_ITEMS);
+  const { mapDatabaseToUI } = usePropertyMapper();
   
   useEffect(() => {
     // If not an admin, redirect to login
@@ -50,23 +52,23 @@ export default function AdminDashboard() {
           username: "testuser",
           email: "user@example.com",
           role: "user",
-          profilePicture: "",
-          allowedSoftware: ["VS CODE", "JUPYTER NOTEBOOK", "POSTMAN", "GITHUB"]
+          profile_picture: "",
+          allowed_software: ["VS CODE", "JUPYTER NOTEBOOK", "POSTMAN", "GITHUB"]
         },
         {
           id: "2",
           username: "admin",
           email: "admin@example.com",
           role: "admin",
-          profilePicture: ""
+          profile_picture: ""
         }
       ];
       
-      setUsers(mockUsers);
+      setUsers(mockUsers.map(user => mapDatabaseToUI(user)));
     };
     
     loadUsers();
-  }, [currentUser, navigate]);
+  }, [currentUser, navigate, mapDatabaseToUI]);
   
   const handleLogout = () => {
     logout();
@@ -85,7 +87,7 @@ export default function AdminDashboard() {
     setUsers(users.filter(user => user.id !== userId));
     
     // Also remove their work items
-    setWorkItems(workItems.filter(item => item.userId !== userId));
+    setWorkItems(workItems.filter(item => item.user_id !== userId));
   };
   
   const handleUpdateUserSoftware = (userId: string, software: string[]) => {

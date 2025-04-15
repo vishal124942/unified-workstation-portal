@@ -24,6 +24,7 @@ import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { UserProfile } from "@/contexts/AuthContext";
 import { useToast } from "@/components/ui/use-toast";
+import { usePropertyMapper } from "@/hooks/usePropertyMapper";
 
 // List of all available software
 const ALL_SOFTWARE = [
@@ -48,10 +49,12 @@ export default function UserManagement({
   const [selectedSoftware, setSelectedSoftware] = useState<string[]>([]);
   const [confirmDeleteUser, setConfirmDeleteUser] = useState<string | null>(null);
   const { toast } = useToast();
+  const { mapDatabaseToUI } = usePropertyMapper();
   
   const handleEditSoftware = (user: UserProfile) => {
+    const uiUser = mapDatabaseToUI(user);
     setEditingUser(user);
-    setSelectedSoftware(user.allowedSoftware || []);
+    setSelectedSoftware(uiUser.allowedSoftware || []);
   };
   
   const handleSaveSoftware = () => {
@@ -99,57 +102,60 @@ export default function UserManagement({
             </TableRow>
           </TableHeader>
           <TableBody>
-            {users.map((user) => (
-              <TableRow key={user.id}>
-                <TableCell className="font-medium">
-                  <div className="flex items-center space-x-2">
-                    <Avatar className="h-8 w-8">
-                      <AvatarImage src={user.profilePicture} alt={user.username} />
-                      <AvatarFallback>{user.username.charAt(0).toUpperCase()}</AvatarFallback>
-                    </Avatar>
-                    <div>
-                      <div>{user.username}</div>
-                      <div className="text-xs text-muted-foreground">{user.email}</div>
+            {users.map((user) => {
+              const uiUser = mapDatabaseToUI(user);
+              return (
+                <TableRow key={user.id}>
+                  <TableCell className="font-medium">
+                    <div className="flex items-center space-x-2">
+                      <Avatar className="h-8 w-8">
+                        <AvatarImage src={uiUser.profilePicture} alt={user.username} />
+                        <AvatarFallback>{user.username.charAt(0).toUpperCase()}</AvatarFallback>
+                      </Avatar>
+                      <div>
+                        <div>{user.username}</div>
+                        <div className="text-xs text-muted-foreground">{user.email}</div>
+                      </div>
                     </div>
-                  </div>
-                </TableCell>
-                <TableCell>
-                  <Badge variant={user.role === "admin" ? "destructive" : "default"}>
-                    {user.role}
-                  </Badge>
-                </TableCell>
-                <TableCell>
-                  <div className="flex flex-wrap gap-1">
-                    {user.allowedSoftware?.map((software) => (
-                      <Badge key={software} variant="outline" className="text-xs">
-                        {software}
-                      </Badge>
-                    ))}
-                    {(!user.allowedSoftware || user.allowedSoftware.length === 0) && (
-                      <span className="text-xs text-muted-foreground">No software assigned</span>
-                    )}
-                  </div>
-                </TableCell>
-                <TableCell className="text-right">
-                  <div className="flex justify-end space-x-2">
-                    <Button 
-                      variant="outline" 
-                      size="sm" 
-                      onClick={() => handleEditSoftware(user)}
-                    >
-                      Edit Software
-                    </Button>
-                    <Button 
-                      variant="destructive" 
-                      size="sm"
-                      onClick={() => setConfirmDeleteUser(user.id)}
-                    >
-                      Delete
-                    </Button>
-                  </div>
-                </TableCell>
-              </TableRow>
-            ))}
+                  </TableCell>
+                  <TableCell>
+                    <Badge variant={user.role === "admin" ? "destructive" : "default"}>
+                      {user.role}
+                    </Badge>
+                  </TableCell>
+                  <TableCell>
+                    <div className="flex flex-wrap gap-1">
+                      {uiUser.allowedSoftware?.map((software) => (
+                        <Badge key={software} variant="outline" className="text-xs">
+                          {software}
+                        </Badge>
+                      ))}
+                      {(!uiUser.allowedSoftware || uiUser.allowedSoftware.length === 0) && (
+                        <span className="text-xs text-muted-foreground">No software assigned</span>
+                      )}
+                    </div>
+                  </TableCell>
+                  <TableCell className="text-right">
+                    <div className="flex justify-end space-x-2">
+                      <Button 
+                        variant="outline" 
+                        size="sm" 
+                        onClick={() => handleEditSoftware(user)}
+                      >
+                        Edit Software
+                      </Button>
+                      <Button 
+                        variant="destructive" 
+                        size="sm"
+                        onClick={() => setConfirmDeleteUser(user.id)}
+                      >
+                        Delete
+                      </Button>
+                    </div>
+                  </TableCell>
+                </TableRow>
+              );
+            })}
           </TableBody>
         </Table>
       </div>

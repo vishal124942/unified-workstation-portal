@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -13,10 +12,11 @@ import ProfileSection from "@/components/user/ProfileSection";
 import WorkSubmitDialog from "@/components/user/WorkSubmitDialog";
 import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/components/ui/use-toast";
+import { usePropertyMapper } from "@/hooks/usePropertyMapper";
+import { Code } from "lucide-react";
 
 // Icons for software
 import { 
-  Code, 
   FileCode, 
   Send, 
   Workflow, 
@@ -84,6 +84,10 @@ export default function UserDashboard() {
   const { toast } = useToast();
   const navigate = useNavigate();
   const [activeSoftware, setActiveSoftware] = useState<string | null>(null);
+  const { mapDatabaseToUI } = usePropertyMapper();
+  
+  // Map database user to UI user
+  const uiUser = currentUser ? mapDatabaseToUI(currentUser) : null;
   
   useEffect(() => {
     // If not a user, redirect to login
@@ -185,9 +189,9 @@ export default function UserDashboard() {
             <div className="bg-white p-6 rounded-lg shadow-sm">
               <h2 className="text-xl font-semibold mb-6">Your Allowed Software</h2>
               
-              {currentUser.allowedSoftware && currentUser.allowedSoftware.length > 0 ? (
+              {uiUser?.allowedSoftware && uiUser.allowedSoftware.length > 0 ? (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-                  {currentUser.allowedSoftware.map((software) => (
+                  {uiUser.allowedSoftware.map((software) => (
                     <SoftwareCard
                       key={software}
                       name={software}
@@ -224,11 +228,11 @@ export default function UserDashboard() {
                     this would be integrated with the actual application using SSO.
                   </p>
                   
-                  {currentUser.workData && currentUser.workData[activeSoftware] && (
+                  {uiUser?.workData && uiUser.workData[activeSoftware] && (
                     <div className="mt-4">
                       <h3 className="text-md font-medium mb-2">Your Saved Work:</h3>
                       <div className="space-y-2">
-                        {currentUser.workData[activeSoftware].map((work, index) => (
+                        {uiUser.workData[activeSoftware].map((work, index) => (
                           <div key={index} className="p-3 bg-white border rounded">
                             <p className="text-sm whitespace-pre-wrap">{work}</p>
                           </div>
