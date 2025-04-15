@@ -10,6 +10,9 @@ export interface UserProfile extends UserMetadata {
   email?: string;
 }
 
+// Export WorkItem type so other components can use it
+export { WorkItem };
+
 interface AuthContextType {
   currentUser: UserProfile | null;
   loading: boolean;
@@ -99,9 +102,16 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const updateProfile = async (data: Partial<UserProfile>) => {
     if (!currentUser) throw new Error('No user logged in');
 
+    // Convert profilePicture to profile_picture if present
+    const supabaseFormattedData: any = { ...data };
+    if ('profilePicture' in data) {
+      supabaseFormattedData.profile_picture = data.profilePicture;
+      delete supabaseFormattedData.profilePicture;
+    }
+
     const { error } = await supabase
       .from('users_meta')
-      .update(data)
+      .update(supabaseFormattedData)
       .eq('id', currentUser.id);
 
     if (error) throw error;

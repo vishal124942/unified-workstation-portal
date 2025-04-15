@@ -15,10 +15,15 @@ import {
 } from "@/components/ui/dialog";
 import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/components/ui/use-toast";
+import { usePropertyMapper } from "@/hooks/usePropertyMapper";
 
 export default function ProfileSection() {
   const { currentUser, updateProfile, changePassword } = useAuth();
   const { toast } = useToast();
+  const { mapDatabaseToUI } = usePropertyMapper();
+  
+  // Map database properties to UI-friendly properties
+  const uiUser = currentUser ? mapDatabaseToUI(currentUser) : null;
   
   const [username, setUsername] = useState(currentUser?.username || "");
   const [oldPassword, setOldPassword] = useState("");
@@ -33,7 +38,7 @@ export default function ProfileSection() {
     
     setIsUpdating(true);
     try {
-      let profilePictureUrl = currentUser.profilePicture;
+      let profilePictureUrl = uiUser?.profilePicture;
       
       // In a real app, you would upload the image to a server and get a URL back
       if (profilePicture) {
@@ -42,7 +47,7 @@ export default function ProfileSection() {
       
       await updateProfile({
         username,
-        profilePicture: profilePictureUrl
+        profile_picture: profilePictureUrl // Use snake_case for database
       });
       
       toast({
@@ -104,7 +109,7 @@ export default function ProfileSection() {
       <div className="flex items-center space-x-4">
         <Avatar className="h-20 w-20">
           <AvatarImage 
-            src={profilePicture ? URL.createObjectURL(profilePicture) : currentUser?.profilePicture} 
+            src={profilePicture ? URL.createObjectURL(profilePicture) : uiUser?.profilePicture} 
             alt={currentUser?.username} 
           />
           <AvatarFallback>{currentUser?.username?.charAt(0).toUpperCase()}</AvatarFallback>
