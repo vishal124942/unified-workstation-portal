@@ -26,12 +26,12 @@ export default function UserMonitoring({
   onAcceptWork, 
   onRejectWork 
 }: UserMonitoringProps) {
-  const [selectedUserId, setSelectedUserId] = useState<string>("");
+  const [selectedUserId, setSelectedUserId] = useState<string>("all");
   const { toast } = useToast();
   
-  const filteredWorkItems = selectedUserId 
-    ? workItems.filter(item => item.userId === selectedUserId)
-    : workItems;
+  const filteredWorkItems = selectedUserId === "all"
+    ? workItems
+    : workItems.filter(item => item.userId === selectedUserId);
   
   const handleAcceptWork = (workItemId: string) => {
     onAcceptWork(workItemId);
@@ -57,7 +57,7 @@ export default function UserMonitoring({
             <SelectValue placeholder="Select user" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="">All Users</SelectItem>
+            <SelectItem value="all">All Users</SelectItem>
             {users.filter(user => user.role === "user").map(user => (
               <SelectItem key={user.id} value={user.id}>{user.username}</SelectItem>
             ))}
@@ -112,7 +112,7 @@ export default function UserMonitoring({
         ) : (
           <div className="text-center p-8 border border-dashed rounded-lg">
             <p className="text-muted-foreground">
-              {selectedUserId 
+              {selectedUserId !== "all" 
                 ? "This user has not submitted any work yet."
                 : "No work submissions have been received yet."}
             </p>
