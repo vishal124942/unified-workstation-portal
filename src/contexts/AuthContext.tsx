@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { User } from '@supabase/supabase-js';
-import { supabase, UserMetadata, WorkItem as SupabaseWorkItem } from '@/lib/supabase';
+import { supabase, UserMetadata, WorkItem } from '@/lib/supabase';
 
 // Types
 export type UserRole = 'user' | 'admin';
@@ -13,7 +13,7 @@ export interface UserProfile extends UserMetadata {
 }
 
 // Export WorkItem type for other components
-export type { SupabaseWorkItem as WorkItem };
+export type { WorkItem };
 
 interface AuthContextType {
   currentUser: UserProfile | null;

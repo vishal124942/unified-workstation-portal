@@ -1,5 +1,6 @@
+
 import { UserProfile } from '@/contexts/AuthContext';
-import { WorkItem as SupabaseWorkItem } from '@/lib/supabase';
+import { WorkItem as SupabaseWorkItem, UserMetadata } from '@/lib/supabase';
 
 export interface UIWorkItem extends Omit<SupabaseWorkItem, 'user_id' | 'created_at'> {
   userId: string;

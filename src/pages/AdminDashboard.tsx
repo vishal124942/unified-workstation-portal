@@ -53,14 +53,16 @@ export default function AdminDashboard() {
           email: "user@example.com",
           role: "user",
           profile_picture: "",
-          allowed_software: ["VS CODE", "JUPYTER NOTEBOOK", "POSTMAN", "GITHUB"]
+          allowed_software: ["VS CODE", "JUPYTER NOTEBOOK", "POSTMAN", "GITHUB"],
+          created_at: new Date().toISOString() // Add the required created_at field
         },
         {
           id: "2",
           username: "admin",
           email: "admin@example.com",
           role: "admin",
-          profile_picture: ""
+          profile_picture: "",
+          created_at: new Date().toISOString() // Add the required created_at field
         }
       ];
       
