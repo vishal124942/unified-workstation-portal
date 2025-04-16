@@ -1,23 +1,21 @@
 
-import { UserProfile } from '@/contexts/AuthContext';
-import { WorkItem as SupabaseWorkItem, UserMetadata } from '@/lib/supabase';
+import { useCallback } from 'react';
 
-export interface UIWorkItem extends Omit<SupabaseWorkItem, 'user_id' | 'created_at'> {
+export interface UIWorkItem {
+  id: string;
   userId: string;
-  username?: string;
+  software: string;
+  content: string;
+  status: string;
   createdAt: string;
+  username?: string;
 }
 
-/**
- * Helper function to standardize property names between UI components and Supabase
- */
 export const usePropertyMapper = () => {
-  // Maps UI property names to Supabase database column names
-  const mapUItoDatabase = (data: Partial<UserProfile>): Record<string, any> => {
-    const mappedData: Record<string, any> = {};
+  const mapUItoDatabase = useCallback((data) => {
+    const mappedData = {};
     
     Object.entries(data).forEach(([key, value]) => {
-      // Convert camelCase to snake_case for specific properties
       switch (key) {
         case 'profilePicture':
           mappedData.profile_picture = value;
@@ -34,30 +32,27 @@ export const usePropertyMapper = () => {
     });
     
     return mappedData;
-  };
+  }, []);
 
-  // Maps Supabase database column names to UI property names for display
-  const mapDatabaseToUI = (data: UserMetadata): UserProfile => {
-    if (!data) return data as unknown as UserProfile;
+  const mapDatabaseToUI = useCallback((data) => {
+    if (!data) return data;
     
     return {
       ...data,
-      // Add UI-friendly property names while keeping the original ones
       profilePicture: data.profile_picture,
       allowedSoftware: data.allowed_software,
       workData: {} // Placeholder - would be populated with actual data
     };
-  };
+  }, []);
 
-  // Maps Supabase work items to UI-friendly format
-  const mapWorkItemToUI = (item: SupabaseWorkItem, username?: string): UIWorkItem => {
+  const mapWorkItemToUI = useCallback((item, username) => {
     return {
       ...item,
       userId: item.user_id,
       createdAt: item.created_at,
       username: username
     };
-  };
+  }, []);
 
   return {
     mapUItoDatabase,

@@ -5,7 +5,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import UserManagement from "@/components/admin/UserManagement";
 import UserMonitoring from "@/components/admin/UserMonitoring";
 import DatabaseConnection from "@/components/admin/DatabaseConnection";
-import { useAuth, useAdmin } from "@/contexts/AuthContext";
+import { useAuth, useAdmin } from "@/contexts/index";
 import { usePropertyMapper } from "@/hooks/usePropertyMapper";
 
 // Sample work items for demonstration

@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -10,7 +11,7 @@ import {
 import SoftwareCard from "@/components/user/SoftwareCard";
 import ProfileSection from "@/components/user/ProfileSection";
 import WorkSubmitDialog from "@/components/user/WorkSubmitDialog";
-import { useAuth } from "@/contexts/AuthContext";
+import { useAuth, useWork } from "@/contexts/index";
 import { useToast } from "@/components/ui/use-toast";
 import { usePropertyMapper } from "@/hooks/usePropertyMapper";
 import { Code } from "lucide-react";
@@ -80,10 +81,11 @@ const SOFTWARE_URLS = {
 };
 
 export default function UserDashboard() {
-  const { currentUser, logout, generateSSOToken, saveWorkData } = useAuth();
+  const { currentUser, logout } = useAuth();
+  const { generateSSOToken, saveWorkData } = useWork();
   const { toast } = useToast();
   const navigate = useNavigate();
-  const [activeSoftware, setActiveSoftware] = useState<string | null>(null);
+  const [activeSoftware, setActiveSoftware] = useState(null);
   const { mapDatabaseToUI } = usePropertyMapper();
   
   // Map database user to UI user

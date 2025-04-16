@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { 
@@ -10,11 +9,8 @@ import {
 } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { UserProfile } from "@/contexts/AuthContext";
-import { WorkItem } from "@/lib/supabase";
 import { useToast } from "@/components/ui/use-toast";
 import { usePropertyMapper } from "@/hooks/usePropertyMapper";
-import { UIWorkItem } from "@/hooks/usePropertyMapper";
 
 interface UserMonitoringProps {
   users: UserProfile[];
@@ -33,7 +29,6 @@ export default function UserMonitoring({
   const { toast } = useToast();
   const { mapWorkItemToUI } = usePropertyMapper();
   
-  // Find username for each work item
   const uiWorkItems: UIWorkItem[] = workItems.map(item => {
     const user = users.find(user => user.id === item.user_id);
     return mapWorkItemToUI(item, user?.username);

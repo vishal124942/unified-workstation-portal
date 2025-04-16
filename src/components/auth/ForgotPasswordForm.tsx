@@ -1,6 +1,5 @@
-
 import { useState } from "react";
-import { useAuth } from "@/contexts/AuthContext";
+import { useAuth, usePassword } from "@/contexts/index";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -20,7 +19,7 @@ export default function ForgotPasswordForm() {
   const [loading, setLoading] = useState(false);
   const [role, setRole] = useState<"user" | "admin">("user");
   
-  const { forgotPassword, resetPassword } = useAuth();
+  const { forgotPassword, resetPassword } = usePassword();
   const { toast } = useToast();
 
   const handleRequestReset = async (e: React.FormEvent) => {

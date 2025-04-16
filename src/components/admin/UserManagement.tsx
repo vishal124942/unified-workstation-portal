@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { 
@@ -22,7 +21,6 @@ import { Label } from "@/components/ui/label";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { UserProfile } from "@/contexts/AuthContext";
 import { useToast } from "@/components/ui/use-toast";
 import { usePropertyMapper } from "@/hooks/usePropertyMapper";
 
@@ -33,7 +31,7 @@ const ALL_SOFTWARE = [
 ];
 
 interface UserManagementProps {
-  users: UserProfile[];
+  users: any[];
   currentUserId: string;
   onDeleteUser: (userId: string) => void;
   onUpdateUserSoftware: (userId: string, software: string[]) => void;
@@ -45,13 +43,13 @@ export default function UserManagement({
   onDeleteUser,
   onUpdateUserSoftware
 }: UserManagementProps) {
-  const [editingUser, setEditingUser] = useState<UserProfile | null>(null);
+  const [editingUser, setEditingUser] = useState<any | null>(null);
   const [selectedSoftware, setSelectedSoftware] = useState<string[]>([]);
   const [confirmDeleteUser, setConfirmDeleteUser] = useState<string | null>(null);
   const { toast } = useToast();
   const { mapDatabaseToUI } = usePropertyMapper();
   
-  const handleEditSoftware = (user: UserProfile) => {
+  const handleEditSoftware = (user: any) => {
     const uiUser = mapDatabaseToUI(user);
     setEditingUser(user);
     setSelectedSoftware(uiUser.allowedSoftware || []);

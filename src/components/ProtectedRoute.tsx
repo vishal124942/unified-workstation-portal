@@ -1,10 +1,10 @@
 
 import { Navigate, useLocation } from "react-router-dom";
-import { useAuth, UserRole } from "@/contexts/AuthContext";
+import { useAuth, UserRoles } from "@/contexts/index";
 
 interface ProtectedRouteProps {
   children: React.ReactNode;
-  requiredRole?: UserRole | UserRole[];
+  requiredRole?: string | string[];
 }
 
 const ProtectedRoute = ({ children, requiredRole }: ProtectedRouteProps) => {
