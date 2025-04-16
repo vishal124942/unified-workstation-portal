@@ -52,9 +52,22 @@ export function usePropertyMapper() {
     };
   };
 
+  /**
+   * Maps WorkItem to UIWorkItem with username
+   */
+  const mapWorkItemToUI = (item: WorkItem, username?: string): UIWorkItem => {
+    return {
+      ...item,
+      userId: item.user_id,
+      username: username || 'Unknown',
+      displayDate: new Date(item.created_at).toLocaleString()
+    };
+  };
+
   return {
     mapDatabaseToUI,
     mapUIToDatabase,
+    mapWorkItemToUI
   };
 }
 

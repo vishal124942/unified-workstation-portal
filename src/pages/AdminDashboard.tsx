@@ -1,3 +1,4 @@
+
 import { useEffect, useState } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
@@ -12,7 +13,14 @@ import { useAuth } from "@/contexts/index";
 const AdminDashboard = () => {
   const { currentUser, logout } = useAuth();
   const { toast } = useToast();
-  const { users, workItems } = useAdmin();
+  const { 
+    users, 
+    workItems, 
+    deleteUser, 
+    updateUserAllowedSoftware,
+    acceptWorkItem,
+    rejectWorkItem
+  } = useAdmin();
   const [userCount, setUserCount] = useState(0);
   const [workItemCount, setWorkItemCount] = useState(0);
 
@@ -86,10 +94,20 @@ const AdminDashboard = () => {
           <TabsTrigger value="monitoring">User Monitoring</TabsTrigger>
         </TabsList>
         <TabsContent value="users">
-          <UserManagement />
+          <UserManagement 
+            users={users} 
+            currentUserId={currentUser.id}
+            onDeleteUser={deleteUser}
+            onUpdateUserSoftware={updateUserAllowedSoftware}
+          />
         </TabsContent>
         <TabsContent value="monitoring">
-          <UserMonitoring />
+          <UserMonitoring 
+            users={users}
+            workItems={workItems}
+            onAcceptWork={acceptWorkItem}
+            onRejectWork={rejectWorkItem}
+          />
         </TabsContent>
       </Tabs>
     </div>

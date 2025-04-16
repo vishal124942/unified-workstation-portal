@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { 
@@ -11,6 +12,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/components/ui/use-toast";
 import { usePropertyMapper } from "@/hooks/usePropertyMapper";
+import { UserProfile, WorkItem, UIWorkItem } from "@/types";
 
 interface UserMonitoringProps {
   users: UserProfile[];
@@ -27,11 +29,16 @@ export default function UserMonitoring({
 }: UserMonitoringProps) {
   const [selectedUserId, setSelectedUserId] = useState<string>("all");
   const { toast } = useToast();
-  const { mapWorkItemToUI } = usePropertyMapper();
+  const { mapDatabaseToUI } = usePropertyMapper();
   
   const uiWorkItems: UIWorkItem[] = workItems.map(item => {
     const user = users.find(user => user.id === item.user_id);
-    return mapWorkItemToUI(item, user?.username);
+    return {
+      ...item,
+      userId: item.user_id,
+      username: user?.username || 'Unknown',
+      displayDate: new Date(item.created_at).toLocaleString()
+    } as UIWorkItem;
   });
   
   const filteredWorkItems = selectedUserId === "all"
