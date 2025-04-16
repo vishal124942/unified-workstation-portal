@@ -1,7 +1,7 @@
 
 // Export all contexts from a single file
 import { AuthProvider, useAuth } from './auth/AuthContext';
-import { PasswordProvider, usePassword } from './auth/PasswordContext';
+import { PasswordProvider, usePassword } from './auth/PasswordContext.jsx';
 import { AdminProvider, useAdmin } from './admin/AdminContext.jsx';
 import { WorkProvider, useWork } from './work/WorkContext';
 import { RootProvider } from './RootProvider';
@@ -19,7 +19,7 @@ export {
   RootProvider
 };
 
-// Export types
+// Export types from the existing file
 export const UserRoles = {
   ADMIN: 'admin',
   USER: 'user'
