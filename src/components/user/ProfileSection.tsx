@@ -13,7 +13,7 @@ import {
   DialogTitle, 
   DialogTrigger 
 } from "@/components/ui/dialog";
-import { useAuth } from "@/contexts/AuthContext";
+import { useAuth } from "@/contexts/index";
 import { useToast } from "@/components/ui/use-toast";
 import { usePropertyMapper } from "@/hooks/usePropertyMapper";
 

@@ -1,6 +1,6 @@
 
 // Export all contexts from a single file
-import { AuthProvider, useAuth } from './auth/AuthContext';
+import { AuthProvider, useAuth } from './auth/AuthContext.jsx';
 import { PasswordProvider, usePassword } from './auth/PasswordContext.jsx';
 import { AdminProvider, useAdmin } from './admin/AdminContext.jsx';
 import { WorkProvider, useWork } from './work/WorkContext.jsx';

@@ -1,62 +1,61 @@
 
-import { useCallback } from 'react';
+import { UserProfile, WorkItem, UIWorkItem } from "@/types";
 
-export interface UIWorkItem {
-  id: string;
-  userId: string;
-  software: string;
-  content: string;
-  status: string;
-  createdAt: string;
-  username?: string;
-}
-
-export const usePropertyMapper = () => {
-  const mapUItoDatabase = useCallback((data) => {
-    const mappedData = {};
-    
-    Object.entries(data).forEach(([key, value]) => {
-      switch (key) {
-        case 'profilePicture':
-          mappedData.profile_picture = value;
-          break;
-        case 'allowedSoftware':
-          mappedData.allowed_software = value;
-          break;
-        case 'workData':
-          // Don't map this to database as it's a derived property
-          break;
-        default:
-          mappedData[key] = value;
-      }
-    });
-    
-    return mappedData;
-  }, []);
-
-  const mapDatabaseToUI = useCallback((data) => {
-    if (!data) return data;
-    
+export function usePropertyMapper() {
+  /**
+   * Maps database properties to UI-friendly properties
+   */
+  const mapDatabaseToUI = (data: any = {}): any => {
+    // Map database property names to UI-friendly names
+    // This helps transition between snake_case (database) and camelCase (UI)
     return {
-      ...data,
-      profilePicture: data.profile_picture,
-      allowedSoftware: data.allowed_software,
-      workData: {} // Placeholder - would be populated with actual data
+      // Common properties
+      id: data.id || '',
+      createdAt: data.created_at || '',
+      
+      // User specific properties
+      username: data.username || '',
+      email: data.email || '',
+      role: data.role || '',
+      profilePicture: data.profile_picture || '',
+      allowedSoftware: data.allowed_software || [],
+      
+      // Work item specific properties
+      userId: data.user_id || '',
+      software: data.software || '',
+      content: data.content || '',
+      status: data.status || '',
     };
-  }, []);
+  };
 
-  const mapWorkItemToUI = useCallback((item, username) => {
+  /**
+   * Maps UI-friendly properties back to database properties
+   */
+  const mapUIToDatabase = (data: any = {}): any => {
     return {
-      ...item,
-      userId: item.user_id,
-      createdAt: item.created_at,
-      username: username
+      // Common properties
+      id: data.id,
+      created_at: data.createdAt,
+      
+      // User specific properties
+      username: data.username,
+      email: data.email,
+      role: data.role,
+      profile_picture: data.profilePicture,
+      allowed_software: data.allowedSoftware,
+      
+      // Work item specific properties
+      user_id: data.userId,
+      software: data.software,
+      content: data.content,
+      status: data.status,
     };
-  }, []);
+  };
 
   return {
-    mapUItoDatabase,
     mapDatabaseToUI,
-    mapWorkItemToUI
+    mapUIToDatabase,
   };
-};
+}
+
+export default usePropertyMapper;
