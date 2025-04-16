@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { useAuth } from "@/contexts/index";
 import { Button } from "@/components/ui/button";
@@ -8,6 +9,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { useToast } from "@/components/ui/use-toast";
 import { Link, useNavigate } from "react-router-dom";
+import { Checkbox } from "@/components/ui/checkbox";
 
 export default function SignupForm() {
   const [username, setUsername] = useState("");
@@ -17,6 +19,7 @@ export default function SignupForm() {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [role, setRole] = useState<"user" | "admin">("user");
+  const [termsAccepted, setTermsAccepted] = useState(false);
   
   const { signup } = useAuth();
   const { toast } = useToast();
@@ -25,13 +28,34 @@ export default function SignupForm() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    // Validation
+    // Form validation
+    setError("");
+    
+    if (!username.trim()) {
+      setError("Username is required");
+      return;
+    }
+    
+    if (!email.trim()) {
+      setError("Email is required");
+      return;
+    }
+    
+    if (password.length < 6) {
+      setError("Password must be at least 6 characters");
+      return;
+    }
+    
     if (password !== confirmPassword) {
       setError("Passwords do not match");
       return;
     }
     
-    setError("");
+    if (!termsAccepted) {
+      setError("You must accept the terms and conditions");
+      return;
+    }
+    
     setLoading(true);
 
     try {
@@ -41,12 +65,13 @@ export default function SignupForm() {
         description: "Your account has been created successfully.",
       });
       navigate(role === "admin" ? "/admin" : "/dashboard");
-    } catch (err) {
-      setError("Failed to create an account.");
+    } catch (err: any) {
+      console.error("Signup error:", err);
+      setError(err?.message || "Failed to create an account.");
       toast({
         variant: "destructive",
         title: "Signup failed",
-        description: "This email may already be in use.",
+        description: err?.message || "This email may already be in use.",
       });
     } finally {
       setLoading(false);
@@ -120,6 +145,17 @@ export default function SignupForm() {
                 required
                 placeholder="Confirm your password"
               />
+            </div>
+            
+            <div className="flex items-center space-x-2">
+              <Checkbox 
+                id="terms" 
+                checked={termsAccepted}
+                onCheckedChange={(checked) => setTermsAccepted(checked === true)}
+              />
+              <Label htmlFor="terms" className="text-sm text-muted-foreground">
+                I accept the terms and conditions
+              </Label>
             </div>
             
             <Button type="submit" className="w-full" disabled={loading}>

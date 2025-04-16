@@ -3,8 +3,8 @@ import { createClient } from '@supabase/supabase-js';
 import { getEnv } from './env';
 
 // Get Supabase credentials with fallback values
-const supabaseUrl = getEnv('VITE_SUPABASE_URL');
-const supabaseAnonKey = getEnv('VITE_SUPABASE_ANON_KEY');
+const supabaseUrl = "https://hqfnyqrkziuukcfyspat.supabase.co";
+const supabaseAnonKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhxZm55cXJreml1dWtjZnlzcGF0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDQ2Mzk3OTcsImV4cCI6MjA2MDIxNTc5N30.sh25M_8w6ikm9lYKiJ4NaiiLSZc4RcSSs0KKJgXy4tQ";
 
 export const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
