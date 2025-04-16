@@ -23,7 +23,10 @@ export interface WorkItem {
   created_at: string;
 }
 
-export interface UIWorkItem extends WorkItem {
-  // Any UI-specific properties for work items
-  displayDate?: string;
+export interface UIWorkItem extends Omit<WorkItem, 'user_id'> {
+  // Map from database fields to UI-friendly names
+  userId: string;
+  username: string; 
+  displayDate: string;
+  createdAt?: string; // For compatibility with existing code
 }

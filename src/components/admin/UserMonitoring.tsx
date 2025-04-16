@@ -29,16 +29,11 @@ export default function UserMonitoring({
 }: UserMonitoringProps) {
   const [selectedUserId, setSelectedUserId] = useState<string>("all");
   const { toast } = useToast();
-  const { mapDatabaseToUI } = usePropertyMapper();
+  const { mapWorkItemToUI } = usePropertyMapper();
   
   const uiWorkItems: UIWorkItem[] = workItems.map(item => {
     const user = users.find(user => user.id === item.user_id);
-    return {
-      ...item,
-      userId: item.user_id,
-      username: user?.username || 'Unknown',
-      displayDate: new Date(item.created_at).toLocaleString()
-    } as UIWorkItem;
+    return mapWorkItemToUI(item, user?.username);
   });
   
   const filteredWorkItems = selectedUserId === "all"
@@ -86,7 +81,7 @@ export default function UserMonitoring({
                   <div>
                     <CardTitle>{item.username}</CardTitle>
                     <CardDescription>
-                      Software: {item.software} • {new Date(item.createdAt).toLocaleString()}
+                      Software: {item.software} • {item.displayDate}
                     </CardDescription>
                   </div>
                   <Badge variant={

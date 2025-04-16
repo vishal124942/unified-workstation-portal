@@ -57,10 +57,15 @@ export function usePropertyMapper() {
    */
   const mapWorkItemToUI = (item: WorkItem, username?: string): UIWorkItem => {
     return {
-      ...item,
+      id: item.id,
+      content: item.content,
+      software: item.software,
+      status: item.status,
+      created_at: item.created_at,
       userId: item.user_id,
       username: username || 'Unknown',
-      displayDate: new Date(item.created_at).toLocaleString()
+      displayDate: new Date(item.created_at).toLocaleString(),
+      createdAt: item.created_at
     };
   };
 
